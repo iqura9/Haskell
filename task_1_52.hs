@@ -18,4 +18,4 @@ main = do
   putStrLn "input:"
   print numbers
   putStrLn "outcome:"
-  print $ keepPrimes numbers
+  print (keepPrimes numbers)

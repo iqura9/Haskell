@@ -45,7 +45,7 @@ recursiveSubString(Array, Divider):-
 	printResult(AfterLast).
 
 run :-
-	Array=[0,1],
+	Array=[0,1,3,4,5,6,7,8,1111],
 	write('input: '), 
 	writeln(Array),
 	write('outcome: '),nl,

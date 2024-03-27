@@ -22,7 +22,7 @@ getElementAtIndex index (a : rest)
 main :: IO ()
 main = do
   content <- lines <$> readFile "input.txt"
-  let n = read (head content) :: Int
+  let n = read (head content)
   let numbers = map read (words (content !! 1)) :: [Int]
   -- 0 show input
   putStrLn "input:"

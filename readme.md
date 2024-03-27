@@ -258,3 +258,115 @@ run :-
         findNextPrime(0, Prime),
         recursiveSubString(Array, Prime)).
 ```
+
+[Task_3.hs PDF](Звіт_3_haskell.pdf)
+
+```haskell
+
+data Transition = Transition
+  { fromState :: String,
+    toState :: String,
+    symbol :: String
+  }
+
+data FiniteAutomaton = FiniteAutomaton
+  { states :: [String],
+    symbols :: [String],
+    transitions :: [Transition],
+    startState :: String,
+    finalStates :: [String]
+  }
+
+generateAllStringsHelper :: FiniteAutomaton -> String -> String -> [String] -> Int -> [String]
+generateAllStringsHelper _ _ currentString allStrings k | length currentString > k = allStrings
+generateAllStringsHelper fa currentState currentString allStrings k
+  | length currentString == k && currentState `elem` finalStates fa = currentString : allStrings
+  | otherwise =
+      foldr
+        ( \transition acc ->
+            if fromState transition == currentState
+              then generateAllStringsHelper fa (toState transition) (currentString ++ symbol transition) acc k
+              else acc
+        )
+        allStrings
+        (transitions fa)
+
+generateAllStrings :: FiniteAutomaton -> Int -> [String]
+generateAllStrings fa k = generateAllStringsHelper fa (startState fa) "" [] k
+
+main :: IO ()
+main = do
+  states <- readConstantsFromFile "states.txt"
+  symbols <- readConstantsFromFile "symbols.txt"
+  finalStates <- readConstantsFromFile "final_states.txt"
+  transitionsContent <- readConstantsFromFile "transitions.txt"
+  kContent <- readConstantsFromFile "k.txt"
+
+  let startState = head states
+  let transitions = map parseTransition transitionsContent
+  let automaton = FiniteAutomaton states symbols transitions startState finalStates
+  let k = read (head kContent) :: Int
+
+  print $ generateAllStrings automaton k
+
+parseTransition :: String -> Transition
+parseTransition line =
+  let [fromState, toState, symbol] = words line
+   in Transition fromState toState symbol
+
+readConstantsFromFile :: FilePath -> IO [String]
+readConstantsFromFile filePath = do
+  contents <- readFile filePath
+  return $ lines contents
+
+```
+
+[Task_3.pl PDF](Звіт_3_prolog.pdf)
+
+```prolog
+
+read_lines_from_file(File, Lines) :-
+  read_file_to_string(File, Content, []),
+  split_string(Content, "\n", "", Lines).
+
+parse_transition(Line, transition(FromState, ToState, Symbol)) :-
+  split_string(Line, " ", "", [FromState, ToState, Symbol]).
+
+generate_all_strings_helper(FiniteAutomaton, NextState, CurrentString, K) :-
+  string_length(CurrentString, K),
+  member(NextState, FiniteAutomaton.finalStates),
+  write(CurrentString), write(' ').
+
+generate_all_strings_helper(FiniteAutomaton, CurrentState, CurrentString, K) :-
+  string_length(CurrentString, Length),
+  Length < K,
+  member(transition(CurrentState, NextState, Symbol), FiniteAutomaton.transitions),
+  string_concat(CurrentString, Symbol, NextString),
+  generate_all_strings_helper(FiniteAutomaton, NextState, NextString, K).
+
+generate_all_strings(FiniteAutomaton, K) :-
+  generate_all_strings_helper(FiniteAutomaton, FiniteAutomaton.startState, "", K),
+  fail.
+
+generate_all_strings(_, _).
+
+main :-
+  read_lines_from_file('states.txt', States),
+  read_lines_from_file('symbols.txt', Symbols),
+  read_lines_from_file('final_states.txt', FinalStates),
+  read_lines_from_file('transitions.txt', TransitionsContent),
+  read_lines_from_file('k.txt', [KContent]),
+
+  maplist(parse_transition, TransitionsContent, Transitions),
+
+  nth0(0, States, StartState),
+
+  Automaton = _{states:States, symbols:Symbols, transitions:Transitions, startState:StartState, finalStates:FinalStates},
+
+  number_string(K, KContent),
+
+  generate_all_strings(Automaton, K).
+
+:- initialization(main).
+
+```
