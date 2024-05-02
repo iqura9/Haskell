@@ -12,11 +12,11 @@ type Grammar = [Production]
 exampleGrammar :: Grammar
 exampleGrammar =
   [ ('S', "aB"),
-    ('S', "aC"),
+    ('S', "BaC"),
     ('S', "e"),
     ('S', "B"),
     ('S', "q"),
-    ('B', "bC"),
+    ('B', "nbC"),
     ('B', "c"),
     ('C', "d"),
     ('D', "e")
