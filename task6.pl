@@ -2,11 +2,9 @@ fruit(інжир).
 fruit(іриска).
 animal(їжак).
 animal(їжачок).
-
 food(індичка).
 food(йогурт).
 food(їжа).
-
 other(йод).
 
 is_fruit(X) :- fruit(X).
@@ -26,3 +24,12 @@ describe(їжа, 'Це будь-яка речовина, яку можна вж�
 describe(йод, 'Це хімічний елемент, який використовується як антисептик.').
 
 get_description(Item, Description) :- describe(Item, Description).
+
+get_hint(Item, Hint) :-
+    is_fruit(Item), Hint = 'Це фрукт.' ;
+    is_animal(Item), Hint = 'Це тварина.' ;
+    is_food(Item), Hint = 'Це їжа.' ;
+    is_other(Item), Hint = 'Це інше.'.
+
+% get_hint(інжир, Hint).
+% get_description(інжир, Description).
