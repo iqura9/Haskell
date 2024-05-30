@@ -23,13 +23,55 @@ describe(йогурт, 'Це молочний продукт, який кори�
 describe(їжа, 'Це будь-яка речовина, яку можна вживати для харчування.').
 describe(йод, 'Це хімічний елемент, який використовується як антисептик.').
 
-get_description(Item, Description) :- describe(Item, Description).
+ask(Question) :-
+    format('~w (так/ні): ', [Question]),
+    read(Response),
+    (Response = так -> true; Response = ні -> fail).
 
-get_hint(Item, Hint) :-
-    is_fruit(Item), Hint = 'Це фрукт.' ;
-    is_animal(Item), Hint = 'Це тварина.' ;
-    is_food(Item), Hint = 'Це їжа.' ;
-    is_other(Item), Hint = 'Це інше.'.
+determine_class(Class) :-
+    (   ask('Це тварина?')
+    ->  Class = animal
+    ;   ask('Це фрукт?')
+    ->  Class = fruit
+    ;   ask('Це їжа?')
+    ->  Class = food
+    ;   ask('Це інше?')
+    ->  Class = other
+    ;   fail).
 
-% get_hint(інжир, Hint).
-% get_description(інжир, Description).
+determine_object(animal, Object) :-
+    (   ask('Воно має колючки?')
+    ->  (Object = їжак ; Object = їжачок)
+    ;   fail).
+determine_object(fruit, Object) :-
+    (   ask('Це десерт?')
+    ->  Object = інжир
+    ;   fail).
+determine_object(food, Object) :-
+    (   ask('Це молочний продукт?')
+    ->  Object = йогурт
+    ;   Object = індичка).
+determine_object(other, Object) :-
+    Object = йод.
+
+instructions :-
+    writeln('Ласкаво просимо до експертної системи!'),
+    writeln('Ви будете відповідати на запитання системи, вводячи "так." або "ні."'),
+    writeln('Система визначить тип об\'єкта, а потім задасть додаткові запитання для уточнення.'),
+    writeln('Щоб почати, введіть: start.').
+
+start :-
+    (   determine_class(Class)
+    ->  (   determine_object(Class, Object)
+        ->  describe(Object, Description),
+            format('Ваш об\'єкт: ~w. ~w~n', [Object, Description])
+        ;   format('Об\'єкт не знайдено в базі знань.~n')
+        )
+    ;   format('Клас не знайдено в базі знань.~n')
+    ).
+
+main :-
+    instructions,
+    start.
+
+:- initialization(main).
